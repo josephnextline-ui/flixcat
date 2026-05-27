@@ -1,13 +1,7 @@
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  ScrollView,
-  Linking,
-} from "react-native";
+import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
-import { Clapperboard, Shield, Tv, Zap } from "lucide-react-native";
+import { Shield, Tv, Zap, CheckCircle } from "lucide-react-native";
 
 const SERVERS = ["VidLink", "VidFast", "VidNest", "Videasy", "VidZee"];
 
@@ -16,96 +10,88 @@ export default function ProfileScreen() {
 
   const Card = ({ children, style }) => (
     <View
-      style={{
-        backgroundColor: "#141414",
-        borderRadius: 16,
-        borderWidth: 1,
-        borderColor: "#2a2a2a",
-        padding: 16,
-        marginBottom: 12,
-        ...style,
-      }}
+      style={[
+        {
+          backgroundColor: "#0f0f0f",
+          borderRadius: 14,
+          padding: 16,
+          borderWidth: 1,
+          borderColor: "#1f1f1f",
+          marginBottom: 14,
+        },
+        style,
+      ]}
     >
       {children}
     </View>
   );
 
   return (
-    <View
-      style={{ flex: 1, backgroundColor: "#0a0a0a", paddingTop: insets.top }}
-    >
+    <View style={{ flex: 1, backgroundColor: "#000", paddingTop: insets.top }}>
       <StatusBar style="light" />
-
       <ScrollView
+        showsVerticalScrollIndicator={false}
         contentContainerStyle={{
           padding: 16,
           paddingBottom: insets.bottom + 80,
         }}
       >
         {/* Brand header */}
-        <View style={{ alignItems: "center", paddingVertical: 24 }}>
-          <View
+        <View style={{ alignItems: "center", paddingVertical: 28 }}>
+          <Text
             style={{
-              width: 72,
-              height: 72,
-              borderRadius: 20,
-              backgroundColor: "#E50914",
-              alignItems: "center",
-              justifyContent: "center",
-              marginBottom: 12,
-              shadowColor: "#E50914",
-              shadowOpacity: 0.5,
-              shadowRadius: 16,
+              color: "#E50914",
+              fontSize: 36,
+              fontWeight: "900",
+              letterSpacing: -1,
             }}
           >
-            <Clapperboard size={36} color="white" />
-          </View>
-          <Text style={{ fontSize: 32, fontWeight: "900", color: "#fff" }}>
-            Flix<Text style={{ color: "#E50914" }}>Cat</Text>
+            FlixCat
           </Text>
-          <Text style={{ color: "#6b7280", fontSize: 13, marginTop: 4 }}>
+          <Text style={{ color: "#6B6B6B", fontSize: 14, marginTop: 4 }}>
             Your purr-fect streaming destination
           </Text>
         </View>
 
         {/* Ad blocking badge */}
         <Card>
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              gap: 12,
-              marginBottom: 8,
-            }}
-          >
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
             <View
               style={{
-                width: 40,
-                height: 40,
-                borderRadius: 20,
-                backgroundColor: "#14532d",
-                justifyContent: "center",
+                width: 36,
+                height: 36,
+                borderRadius: 10,
+                backgroundColor: "rgba(34, 197, 94, 0.15)",
                 alignItems: "center",
+                justifyContent: "center",
               }}
             >
-              <Shield color="#22c55e" size={22} />
+              <Shield size={18} color="#22c55e" />
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={{ color: "#fff", fontSize: 16, fontWeight: "700" }}>
+              <Text style={{ color: "#fff", fontSize: 15, fontWeight: "700" }}>
                 Ad Blocker Active
               </Text>
-              <Text style={{ color: "#6b7280", fontSize: 12 }}>
+              <Text style={{ color: "#6B6B6B", fontSize: 12, marginTop: 2 }}>
                 Popup and redirect ads are blocked
               </Text>
             </View>
             <View
               style={{
-                width: 10,
-                height: 10,
-                borderRadius: 5,
-                backgroundColor: "#22c55e",
+                backgroundColor: "rgba(34, 197, 94, 0.15)",
+                borderRadius: 20,
+                paddingHorizontal: 10,
+                paddingVertical: 4,
+                borderWidth: 1,
+                borderColor: "rgba(34, 197, 94, 0.3)",
               }}
-            />
+            >
+              <Text
+                style={{ color: "#22c55e", fontSize: 11, fontWeight: "700" }}
+              >
+                ON
+              </Text>
+            </View>
           </View>
         </Card>
 
@@ -115,12 +101,12 @@ export default function ProfileScreen() {
             style={{
               flexDirection: "row",
               alignItems: "center",
-              gap: 10,
-              marginBottom: 12,
+              gap: 8,
+              marginBottom: 14,
             }}
           >
-            <Tv color="#E50914" size={20} />
-            <Text style={{ color: "#fff", fontSize: 16, fontWeight: "700" }}>
+            <Tv size={16} color="#E50914" />
+            <Text style={{ color: "#fff", fontSize: 15, fontWeight: "700" }}>
               Streaming Servers
             </Text>
           </View>
@@ -129,16 +115,16 @@ export default function ProfileScreen() {
               key={server}
               style={{
                 flexDirection: "row",
-                justifyContent: "space-between",
                 alignItems: "center",
-                paddingVertical: 8,
+                justifyContent: "space-between",
+                paddingVertical: 10,
                 borderTopWidth: i === 0 ? 0 : 1,
-                borderTopColor: "#2a2a2a",
+                borderColor: "#1f1f1f",
               }}
             >
               <Text style={{ color: "#d1d5db", fontSize: 14 }}>{server}</Text>
               <View
-                style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
+                style={{ flexDirection: "row", alignItems: "center", gap: 5 }}
               >
                 <View
                   style={{
@@ -149,7 +135,7 @@ export default function ProfileScreen() {
                   }}
                 />
                 <Text
-                  style={{ color: "#22c55e", fontSize: 11, fontWeight: "600" }}
+                  style={{ color: "#22c55e", fontSize: 12, fontWeight: "600" }}
                 >
                   Online
                 </Text>
@@ -158,35 +144,64 @@ export default function ProfileScreen() {
           ))}
         </Card>
 
-        {/* Speed hint */}
+        {/* Tips */}
         <Card>
           <View
             style={{
               flexDirection: "row",
               alignItems: "center",
-              gap: 10,
-              marginBottom: 8,
+              gap: 8,
+              marginBottom: 12,
             }}
           >
-            <Zap color="#f59e0b" size={20} />
-            <Text style={{ color: "#fff", fontSize: 16, fontWeight: "700" }}>
+            <Zap size={16} color="#f59e0b" />
+            <Text style={{ color: "#fff", fontSize: 15, fontWeight: "700" }}>
               Tips
             </Text>
           </View>
-          <Text style={{ color: "#9ca3af", fontSize: 13, lineHeight: 20 }}>
-            If a video doesn't load, switch to a different server using the
-            "Change Server" button on the player.{"\n\n"}
-            Popup ads are automatically blocked. If you see any overlays inside
-            the player, they are part of the video player's own UI.
-          </Text>
+          <View style={{ gap: 10 }}>
+            <View style={{ flexDirection: "row", gap: 8 }}>
+              <Text style={{ color: "#6B6B6B", marginTop: 1 }}>-</Text>
+              <Text
+                style={{
+                  color: "#9ca3af",
+                  fontSize: 13,
+                  lineHeight: 20,
+                  flex: 1,
+                }}
+              >
+                If a video doesn't load, switch to a different server using the
+                "Change Server" button on the player.
+              </Text>
+            </View>
+            <View style={{ flexDirection: "row", gap: 8 }}>
+              <Text style={{ color: "#6B6B6B", marginTop: 1 }}>-</Text>
+              <Text
+                style={{
+                  color: "#9ca3af",
+                  fontSize: 13,
+                  lineHeight: 20,
+                  flex: 1,
+                }}
+              >
+                Popup ads are automatically blocked. If you see any overlays
+                inside the player, they are part of the video player's own UI.
+              </Text>
+            </View>
+          </View>
         </Card>
 
-        {/* Powered by */}
-        <View style={{ alignItems: "center", marginTop: 8 }}>
-          <Text style={{ color: "#374151", fontSize: 12 }}>
-            Powered by TMDB · v1.0
-          </Text>
-        </View>
+        {/* Footer */}
+        <Text
+          style={{
+            color: "#2a2a2a",
+            fontSize: 12,
+            textAlign: "center",
+            marginTop: 8,
+          }}
+        >
+          Powered by TMDB · v1.0
+        </Text>
       </ScrollView>
     </View>
   );

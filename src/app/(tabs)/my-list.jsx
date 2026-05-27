@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -10,6 +10,14 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { useRouter, useFocusEffect } from "expo-router";
 import { Image } from "expo-image";
+import {
+  X,
+  Clapperboard,
+  Tv,
+  Heart,
+  BookMarked,
+  Play,
+} from "lucide-react-native";
 import { getWatchlist, removeFromWatchlist } from "@/utils/watchlist";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
@@ -20,7 +28,6 @@ export default function MyListScreen() {
   const router = useRouter();
   const [watchlist, setWatchlist] = useState([]);
 
-  // Reload whenever the tab gains focus
   useFocusEffect(
     useCallback(() => {
       loadWatchlist();
@@ -38,142 +45,248 @@ export default function MyListScreen() {
   };
 
   return (
-    <View
-      style={{ flex: 1, backgroundColor: "#0a0a0a", paddingTop: insets.top }}
-    >
+    <View style={{ flex: 1, backgroundColor: "#000", paddingTop: insets.top }}>
       <StatusBar style="light" />
 
       {/* Header */}
-      <View style={{ paddingHorizontal: 16, paddingVertical: 16 }}>
-        <Text style={{ fontSize: 28, fontWeight: "900", color: "#fff" }}>
-          ❤ My List
-        </Text>
-        {watchlist.length > 0 && (
-          <Text style={{ color: "#6b7280", fontSize: 13, marginTop: 2 }}>
-            {watchlist.length} saved
+      <View
+        style={{
+          paddingHorizontal: 16,
+          paddingTop: 16,
+          paddingBottom: 14,
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+          borderBottomWidth: watchlist.length > 0 ? 1 : 0,
+          borderColor: "#111",
+        }}
+      >
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+          <Heart size={22} color="#E50914" fill="#E50914" />
+          <Text
+            style={{
+              color: "#fff",
+              fontSize: 26,
+              fontWeight: "900",
+              letterSpacing: -0.5,
+            }}
+          >
+            My List
           </Text>
+        </View>
+        {watchlist.length > 0 && (
+          <View
+            style={{
+              backgroundColor: "rgba(229,9,20,0.1)",
+              borderRadius: 20,
+              paddingHorizontal: 12,
+              paddingVertical: 5,
+              borderWidth: 1,
+              borderColor: "rgba(229,9,20,0.2)",
+            }}
+          >
+            <Text style={{ color: "#E50914", fontSize: 12, fontWeight: "700" }}>
+              {watchlist.length} {watchlist.length === 1 ? "title" : "titles"}
+            </Text>
+          </View>
         )}
       </View>
 
-      <ScrollView
-        contentContainerStyle={{
-          padding: 16,
-          paddingBottom: insets.bottom + 80,
-        }}
-      >
-        {watchlist.length === 0 ? (
-          <View style={{ alignItems: "center", paddingTop: 80 }}>
-            <Text style={{ fontSize: 64, marginBottom: 16 }}>🐱</Text>
-            <Text
-              style={{
-                color: "#fff",
-                fontSize: 20,
-                fontWeight: "700",
-                marginBottom: 8,
-                textAlign: "center",
-              }}
-            >
-              Your list is empty
-            </Text>
-            <Text
-              style={{
-                color: "#6b7280",
-                fontSize: 14,
-                textAlign: "center",
-                lineHeight: 20,
-              }}
-            >
-              Browse movies and shows and tap + to save them here
-            </Text>
+      {watchlist.length === 0 ? (
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            gap: 16,
+            paddingHorizontal: 40,
+          }}
+        >
+          <View
+            style={{
+              width: 90,
+              height: 90,
+              borderRadius: 45,
+              backgroundColor: "#0f0f0f",
+              borderWidth: 1,
+              borderColor: "#1f1f1f",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <BookMarked size={38} color="#2a2a2a" />
           </View>
-        ) : (
-          <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 12 }}>
+          <Text
+            style={{
+              color: "#fff",
+              fontSize: 20,
+              fontWeight: "800",
+              textAlign: "center",
+            }}
+          >
+            Your list is empty
+          </Text>
+          <Text
+            style={{
+              color: "#4a4a4a",
+              fontSize: 14,
+              textAlign: "center",
+              lineHeight: 21,
+            }}
+          >
+            Browse movies and shows, then tap the + button to save them here
+          </Text>
+          <TouchableOpacity
+            onPress={() => router.push("/(tabs)/browse")}
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 8,
+              backgroundColor: "#E50914",
+              paddingHorizontal: 24,
+              paddingVertical: 12,
+              borderRadius: 25,
+              marginTop: 8,
+            }}
+          >
+            <Play size={14} color="#fff" fill="#fff" />
+            <Text style={{ color: "#fff", fontSize: 14, fontWeight: "700" }}>
+              Browse Content
+            </Text>
+          </TouchableOpacity>
+        </View>
+      ) : (
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{
+            paddingHorizontal: 16,
+            paddingTop: 16,
+            paddingBottom: insets.bottom + 80,
+          }}
+        >
+          <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 16 }}>
             {watchlist.map((item) => {
               const posterUrl = item.poster_path
                 ? `https://image.tmdb.org/t/p/w500${item.poster_path}`
                 : null;
               return (
-                <View
-                  key={`${item.content_type}-${item.content_id}`}
+                <TouchableOpacity
+                  key={`${item.content_id}-${item.content_type}`}
+                  onPress={() =>
+                    router.push(
+                      `/details/${item.content_type}/${item.content_id}`,
+                    )
+                  }
+                  activeOpacity={0.85}
                   style={{ width: CARD_WIDTH }}
                 >
-                  <TouchableOpacity
-                    activeOpacity={0.85}
-                    onPress={() =>
-                      router.push(
-                        `/watch/${item.content_type}/${item.content_id}`,
-                      )
-                    }
+                  <View
+                    style={{
+                      width: CARD_WIDTH,
+                      height: CARD_WIDTH * 1.5,
+                      borderRadius: 12,
+                      overflow: "hidden",
+                      backgroundColor: "#111",
+                      marginBottom: 8,
+                      borderWidth: 1,
+                      borderColor: "rgba(255,255,255,0.05)",
+                    }}
                   >
                     {posterUrl ? (
                       <Image
                         source={{ uri: posterUrl }}
-                        style={{
-                          width: "100%",
-                          height: CARD_WIDTH * 1.5,
-                          borderRadius: 10,
-                        }}
+                        style={{ width: "100%", height: "100%" }}
                         contentFit="cover"
                         transition={100}
                       />
                     ) : (
                       <View
                         style={{
-                          width: "100%",
-                          height: CARD_WIDTH * 1.5,
-                          borderRadius: 10,
-                          backgroundColor: "#1f1f1f",
+                          flex: 1,
                           justifyContent: "center",
                           alignItems: "center",
                         }}
                       >
-                        <Text style={{ fontSize: 40 }}>🐱</Text>
+                        {item.content_type === "movie" ? (
+                          <Clapperboard size={32} color="#2a2a2a" />
+                        ) : (
+                          <Tv size={32} color="#2a2a2a" />
+                        )}
                       </View>
                     )}
-                    <Text
+
+                    {/* Play button overlay */}
+                    <View
                       style={{
-                        color: "#fff",
-                        fontSize: 13,
-                        fontWeight: "600",
-                        marginTop: 8,
+                        position: "absolute",
+                        bottom: 8,
+                        left: 8,
+                        width: 32,
+                        height: 32,
+                        borderRadius: 16,
+                        backgroundColor: "rgba(229,9,20,0.9)",
+                        justifyContent: "center",
+                        alignItems: "center",
                       }}
-                      numberOfLines={2}
                     >
-                      {item.title}
-                    </Text>
-                    <Text
-                      style={{ color: "#6b7280", fontSize: 11, marginTop: 2 }}
+                      <Play size={13} color="#fff" fill="#fff" />
+                    </View>
+
+                    {/* Remove button */}
+                    <TouchableOpacity
+                      onPress={() => handleRemove(item)}
+                      style={{
+                        position: "absolute",
+                        top: 7,
+                        right: 7,
+                        width: 28,
+                        height: 28,
+                        borderRadius: 14,
+                        backgroundColor: "rgba(0,0,0,0.7)",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        borderWidth: 1,
+                        borderColor: "rgba(255,255,255,0.1)",
+                      }}
                     >
-                      {item.content_type === "movie" ? "🎬 Movie" : "📺 TV"}
-                    </Text>
-                  </TouchableOpacity>
-                  {/* Remove button */}
-                  <TouchableOpacity
-                    onPress={() => handleRemove(item)}
+                      <X size={13} color="#fff" strokeWidth={2.5} />
+                    </TouchableOpacity>
+                  </View>
+
+                  <Text
                     style={{
-                      position: "absolute",
-                      top: 6,
-                      right: 6,
-                      width: 26,
-                      height: 26,
-                      borderRadius: 13,
-                      backgroundColor: "#E50914",
-                      justifyContent: "center",
+                      color: "#e5e7eb",
+                      fontSize: 13,
+                      fontWeight: "600",
+                      lineHeight: 18,
+                    }}
+                    numberOfLines={2}
+                  >
+                    {item.title}
+                  </Text>
+                  <View
+                    style={{
+                      flexDirection: "row",
                       alignItems: "center",
+                      gap: 4,
+                      marginTop: 3,
                     }}
                   >
-                    <Text
-                      style={{ color: "#fff", fontSize: 12, fontWeight: "700" }}
-                    >
-                      ✕
+                    {item.content_type === "movie" ? (
+                      <Clapperboard size={10} color="#4a4a4a" />
+                    ) : (
+                      <Tv size={10} color="#4a4a4a" />
+                    )}
+                    <Text style={{ color: "#4a4a4a", fontSize: 11 }}>
+                      {item.content_type === "movie" ? "Movie" : "TV Series"}
                     </Text>
-                  </TouchableOpacity>
-                </View>
+                  </View>
+                </TouchableOpacity>
               );
             })}
           </View>
-        )}
-      </ScrollView>
+        </ScrollView>
+      )}
     </View>
   );
 }

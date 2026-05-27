@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -7,7 +7,6 @@ import {
   FlatList,
   TextInput,
   ActivityIndicator,
-  StyleSheet,
   Dimensions,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -85,20 +84,17 @@ export default function BrowseScreen() {
   const [loadingMore, setLoadingMore] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
 
-  // Filters
   const [mediaType, setMediaType] = useState("movie");
   const [genre, setGenre] = useState("");
   const [sort, setSort] = useState("popularity.desc");
   const [minRating, setMinRating] = useState("");
   const [year, setYear] = useState("");
 
-  // Sync category defaults
   const applyCategory = (catId) => {
     setCategory(catId);
     const d = CATEGORY_DEFAULTS[catId];
     setMediaType(d.type);
     setGenre(d.genre);
-    if (catId === "korean") setMediaType("tv");
   };
 
   useEffect(() => {
@@ -113,12 +109,6 @@ export default function BrowseScreen() {
       min_votes: "20",
     });
     if (genre) params.set("genre", genre);
-    if (
-      category === "korean" ||
-      (category === "all" && mediaType === "tv" && genre === "")
-    ) {
-      // for korean category, set language
-    }
     if (CATEGORY_DEFAULTS[category]?.language)
       params.set("language", CATEGORY_DEFAULTS[category].language);
     if (minRating) params.set("vote_average_gte", minRating);
@@ -172,8 +162,6 @@ export default function BrowseScreen() {
             borderRadius: 10,
             overflow: "hidden",
             backgroundColor: "#1a1a1a",
-            borderWidth: 1,
-            borderColor: "rgba(255,255,255,0.06)",
           }}
         >
           {posterUrl ? (
@@ -187,11 +175,11 @@ export default function BrowseScreen() {
             <View
               style={{
                 flex: 1,
-                alignItems: "center",
                 justifyContent: "center",
+                alignItems: "center",
               }}
             >
-              <Clapperboard size={28} color="#444" />
+              <Clapperboard size={28} color="#555" />
             </View>
           )}
           {rating && (
@@ -200,26 +188,29 @@ export default function BrowseScreen() {
                 position: "absolute",
                 top: 5,
                 right: 5,
-                flexDirection: "row",
-                alignItems: "center",
-                gap: 2,
-                backgroundColor: "rgba(0,0,0,0.75)",
                 paddingHorizontal: 5,
                 paddingVertical: 2,
                 borderRadius: 4,
+                backgroundColor: "rgba(0,0,0,0.75)",
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 2,
               }}
             >
               <Star size={8} color="#fbbf24" fill="#fbbf24" />
-              <Text
-                style={{ color: "#fbbf24", fontSize: 9, fontWeight: "700" }}
-              >
+              <Text style={{ color: "#fff", fontSize: 9, fontWeight: "700" }}>
                 {rating}
               </Text>
             </View>
           )}
         </View>
         <Text
-          style={{ color: "#9ca3af", fontSize: 11, marginTop: 5 }}
+          style={{
+            color: "#d1d5db",
+            fontSize: 11,
+            marginTop: 5,
+            fontWeight: "600",
+          }}
           numberOfLines={2}
         >
           {item.title || item.name}
@@ -228,366 +219,313 @@ export default function BrowseScreen() {
     );
   };
 
-  const currentCat = CATEGORIES.find((c) => c.id === category);
-  const CatIcon = currentCat?.icon || Compass;
-
   return (
-    <View
-      style={{ flex: 1, backgroundColor: "#0a0a0a", paddingTop: insets.top }}
-    >
+    <View style={{ flex: 1, backgroundColor: "#000", paddingTop: insets.top }}>
       <StatusBar style="light" />
 
       {/* Header */}
-      <View style={{ paddingHorizontal: 16, paddingTop: 12, paddingBottom: 4 }}>
-        <View
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+          paddingHorizontal: 16,
+          paddingTop: 16,
+          paddingBottom: 12,
+        }}
+      >
+        <Text
+          style={{
+            color: "#fff",
+            fontSize: 24,
+            fontWeight: "900",
+            letterSpacing: -0.5,
+          }}
+        >
+          Browse
+        </Text>
+        <TouchableOpacity
+          onPress={() => setShowFilters(!showFilters)}
           style={{
             flexDirection: "row",
             alignItems: "center",
-            justifyContent: "space-between",
-            marginBottom: 14,
+            gap: 5,
+            backgroundColor: showFilters ? "#E50914" : "rgba(255,255,255,0.08)",
+            paddingHorizontal: 12,
+            paddingVertical: 7,
+            borderRadius: 20,
+            borderWidth: 1,
+            borderColor: showFilters ? "#E50914" : "rgba(255,255,255,0.12)",
           }}
         >
-          <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-            <CatIcon size={20} color={currentCat?.color || "#E50914"} />
-            <Text style={{ color: "#fff", fontSize: 22, fontWeight: "900" }}>
-              Browse
-            </Text>
-          </View>
-          <TouchableOpacity
-            onPress={() => setShowFilters(!showFilters)}
+          <SlidersHorizontal
+            size={14}
+            color={showFilters ? "#fff" : "#9ca3af"}
+          />
+          <Text
             style={{
-              flexDirection: "row",
-              alignItems: "center",
-              gap: 5,
-              backgroundColor: showFilters
-                ? "#E50914"
-                : "rgba(255,255,255,0.08)",
-              paddingHorizontal: 12,
-              paddingVertical: 6,
-              borderRadius: 20,
-              borderWidth: 1,
-              borderColor: showFilters ? "#E50914" : "rgba(255,255,255,0.12)",
+              color: showFilters ? "#fff" : "#9ca3af",
+              fontSize: 13,
+              fontWeight: "600",
             }}
           >
-            <SlidersHorizontal size={14} color="white" />
-            <Text style={{ color: "white", fontSize: 12, fontWeight: "600" }}>
-              Filters
-            </Text>
-            {showFilters ? (
-              <ChevronUp size={12} color="white" />
-            ) : (
-              <ChevronDown size={12} color="white" />
-            )}
-          </TouchableOpacity>
-        </View>
+            Filters
+          </Text>
+          {showFilters ? (
+            <ChevronUp size={13} color="#fff" />
+          ) : (
+            <ChevronDown size={13} color="#9ca3af" />
+          )}
+        </TouchableOpacity>
+      </View>
 
-        {/* Category pills */}
+      {/* Category pills */}
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={{ flexGrow: 0 }}
+        contentContainerStyle={{
+          paddingHorizontal: 16,
+          gap: 8,
+          paddingBottom: 12,
+        }}
+      >
+        {CATEGORIES.map((cat) => {
+          const CIcon = cat.icon;
+          const active = category === cat.id;
+          return (
+            <TouchableOpacity
+              key={cat.id}
+              onPress={() => applyCategory(cat.id)}
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 5,
+                paddingHorizontal: 12,
+                paddingVertical: 7,
+                borderRadius: 20,
+                backgroundColor: active ? cat.color : "rgba(255,255,255,0.06)",
+                borderWidth: 1,
+                borderColor: active ? cat.color : "rgba(255,255,255,0.08)",
+              }}
+            >
+              <CIcon size={13} color={active ? "#fff" : "#9ca3af"} />
+              <Text
+                style={{
+                  color: active ? "#fff" : "#9ca3af",
+                  fontSize: 13,
+                  fontWeight: "600",
+                }}
+              >
+                {cat.label}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
+      </ScrollView>
+
+      {/* Filters panel */}
+      {showFilters && (
         <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={{ flexGrow: 0, marginBottom: 14 }}
-          contentContainerStyle={{ gap: 6, paddingRight: 8 }}
+          style={{
+            maxHeight: 340,
+            backgroundColor: "#0a0a0a",
+            borderBottomWidth: 1,
+            borderColor: "#1f1f1f",
+          }}
+          contentContainerStyle={{ padding: 16, gap: 16 }}
+          showsVerticalScrollIndicator={false}
         >
-          {CATEGORIES.map((cat) => {
-            const CIcon = cat.icon;
-            const active = category === cat.id;
-            return (
-              <TouchableOpacity
-                key={cat.id}
-                onPress={() => applyCategory(cat.id)}
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  gap: 5,
-                  paddingHorizontal: 12,
-                  paddingVertical: 7,
-                  borderRadius: 20,
-                  backgroundColor: active
-                    ? cat.color
-                    : "rgba(255,255,255,0.06)",
-                  borderWidth: 1,
-                  borderColor: active ? cat.color : "rgba(255,255,255,0.08)",
-                }}
-              >
-                <CIcon size={13} color={active ? "white" : "#9ca3af"} />
-                <Text
+          {/* Type */}
+          <View>
+            <Text
+              style={{
+                color: "#6B6B6B",
+                fontSize: 11,
+                fontWeight: "700",
+                marginBottom: 8,
+                textTransform: "uppercase",
+                letterSpacing: 0.5,
+              }}
+            >
+              Type
+            </Text>
+            <View style={{ flexDirection: "row", gap: 8 }}>
+              {[
+                { id: "movie", label: "Movies" },
+                { id: "tv", label: "TV Shows" },
+              ].map((t) => (
+                <TouchableOpacity
+                  key={t.id}
+                  onPress={() => setMediaType(t.id)}
                   style={{
-                    color: active ? "white" : "#9ca3af",
-                    fontSize: 12,
-                    fontWeight: "700",
-                  }}
-                >
-                  {cat.label}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
-        </ScrollView>
-
-        {/* Filters panel */}
-        {showFilters && (
-          <View
-            style={{
-              backgroundColor: "#141414",
-              borderRadius: 14,
-              padding: 14,
-              marginBottom: 14,
-              borderWidth: 1,
-              borderColor: "rgba(255,255,255,0.08)",
-              gap: 12,
-            }}
-          >
-            {/* Type */}
-            <View>
-              <Text
-                style={{
-                  color: "#6b7280",
-                  fontSize: 10,
-                  fontWeight: "600",
-                  marginBottom: 6,
-                  textTransform: "uppercase",
-                  letterSpacing: 0.5,
-                }}
-              >
-                Type
-              </Text>
-              <View style={{ flexDirection: "row", gap: 6 }}>
-                {[
-                  { id: "movie", label: "Movies" },
-                  { id: "tv", label: "TV Shows" },
-                ].map((t) => (
-                  <TouchableOpacity
-                    key={t.id}
-                    onPress={() => setMediaType(t.id)}
-                    style={{
-                      flex: 1,
-                      paddingVertical: 7,
-                      borderRadius: 8,
-                      alignItems: "center",
-                      backgroundColor:
-                        mediaType === t.id
-                          ? "#E50914"
-                          : "rgba(255,255,255,0.06)",
-                      borderWidth: 1,
-                      borderColor:
-                        mediaType === t.id
-                          ? "#E50914"
-                          : "rgba(255,255,255,0.1)",
-                    }}
-                  >
-                    <Text
-                      style={{
-                        color: "white",
-                        fontSize: 12,
-                        fontWeight: "700",
-                      }}
-                    >
-                      {t.label}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            </View>
-
-            {/* Sort */}
-            <View>
-              <Text
-                style={{
-                  color: "#6b7280",
-                  fontSize: 10,
-                  fontWeight: "600",
-                  marginBottom: 6,
-                  textTransform: "uppercase",
-                  letterSpacing: 0.5,
-                }}
-              >
-                Sort By
-              </Text>
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                style={{ flexGrow: 0 }}
-                contentContainerStyle={{ gap: 5 }}
-              >
-                {SORT_OPTIONS.map((s) => (
-                  <TouchableOpacity
-                    key={s.id}
-                    onPress={() => setSort(s.id)}
-                    style={{
-                      paddingHorizontal: 10,
-                      paddingVertical: 6,
-                      borderRadius: 8,
-                      backgroundColor:
-                        sort === s.id
-                          ? "rgba(229,9,20,0.2)"
-                          : "rgba(255,255,255,0.06)",
-                      borderWidth: 1,
-                      borderColor:
-                        sort === s.id ? "#E50914" : "rgba(255,255,255,0.08)",
-                    }}
-                  >
-                    <Text
-                      style={{
-                        color: sort === s.id ? "#E50914" : "#9ca3af",
-                        fontSize: 11,
-                        fontWeight: "600",
-                      }}
-                    >
-                      {s.label}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </ScrollView>
-            </View>
-
-            {/* Genre */}
-            <View>
-              <Text
-                style={{
-                  color: "#6b7280",
-                  fontSize: 10,
-                  fontWeight: "600",
-                  marginBottom: 6,
-                  textTransform: "uppercase",
-                  letterSpacing: 0.5,
-                }}
-              >
-                Genre
-              </Text>
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                style={{ flexGrow: 0 }}
-                contentContainerStyle={{ gap: 5 }}
-              >
-                {GENRES.map((g) => (
-                  <TouchableOpacity
-                    key={g.id}
-                    onPress={() => setGenre(g.id)}
-                    style={{
-                      paddingHorizontal: 10,
-                      paddingVertical: 6,
-                      borderRadius: 8,
-                      backgroundColor:
-                        genre === g.id
-                          ? "rgba(229,9,20,0.2)"
-                          : "rgba(255,255,255,0.06)",
-                      borderWidth: 1,
-                      borderColor:
-                        genre === g.id ? "#E50914" : "rgba(255,255,255,0.08)",
-                    }}
-                  >
-                    <Text
-                      style={{
-                        color: genre === g.id ? "#E50914" : "#9ca3af",
-                        fontSize: 11,
-                        fontWeight: "600",
-                      }}
-                    >
-                      {g.label}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </ScrollView>
-            </View>
-
-            {/* Year + Rating row */}
-            <View style={{ flexDirection: "row", gap: 10 }}>
-              <View style={{ flex: 1 }}>
-                <Text
-                  style={{
-                    color: "#6b7280",
-                    fontSize: 10,
-                    fontWeight: "600",
-                    marginBottom: 6,
-                    textTransform: "uppercase",
-                    letterSpacing: 0.5,
-                  }}
-                >
-                  Year
-                </Text>
-                <TextInput
-                  value={year}
-                  onChangeText={setYear}
-                  placeholder="e.g. 2024"
-                  placeholderTextColor="#4b5563"
-                  keyboardType="numeric"
-                  maxLength={4}
-                  style={{
-                    backgroundColor: "rgba(255,255,255,0.06)",
+                    flex: 1,
+                    paddingVertical: 8,
+                    borderRadius: 8,
+                    alignItems: "center",
+                    backgroundColor:
+                      mediaType === t.id ? "#E50914" : "rgba(255,255,255,0.06)",
                     borderWidth: 1,
-                    borderColor: "rgba(255,255,255,0.1)",
-                    color: "white",
+                    borderColor:
+                      mediaType === t.id ? "#E50914" : "rgba(255,255,255,0.1)",
+                  }}
+                >
+                  <Text
+                    style={{ color: "#fff", fontSize: 13, fontWeight: "600" }}
+                  >
+                    {t.label}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+
+          {/* Sort */}
+          <View>
+            <Text
+              style={{
+                color: "#6B6B6B",
+                fontSize: 11,
+                fontWeight: "700",
+                marginBottom: 8,
+                textTransform: "uppercase",
+                letterSpacing: 0.5,
+              }}
+            >
+              Sort By
+            </Text>
+            <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
+              {SORT_OPTIONS.map((s) => (
+                <TouchableOpacity
+                  key={s.id}
+                  onPress={() => setSort(s.id)}
+                  style={{
                     paddingHorizontal: 10,
                     paddingVertical: 7,
                     borderRadius: 8,
-                    fontSize: 12,
-                  }}
-                />
-              </View>
-              <View style={{ flex: 1 }}>
-                <Text
-                  style={{
-                    color: "#6b7280",
-                    fontSize: 10,
-                    fontWeight: "600",
-                    marginBottom: 6,
-                    textTransform: "uppercase",
-                    letterSpacing: 0.5,
+                    backgroundColor:
+                      sort === s.id
+                        ? "rgba(229,9,20,0.2)"
+                        : "rgba(255,255,255,0.06)",
+                    borderWidth: 1,
+                    borderColor:
+                      sort === s.id ? "#E50914" : "rgba(255,255,255,0.08)",
                   }}
                 >
-                  Min Rating
-                </Text>
-                <ScrollView
-                  horizontal
-                  showsHorizontalScrollIndicator={false}
-                  style={{ flexGrow: 0 }}
-                  contentContainerStyle={{ gap: 4 }}
-                >
-                  {["", "5", "6", "7", "8"].map((r) => (
-                    <TouchableOpacity
-                      key={r}
-                      onPress={() => setMinRating(r)}
-                      style={{
-                        paddingHorizontal: 9,
-                        paddingVertical: 6,
-                        borderRadius: 8,
-                        backgroundColor:
-                          minRating === r
-                            ? "rgba(229,9,20,0.2)"
-                            : "rgba(255,255,255,0.06)",
-                        borderWidth: 1,
-                        borderColor:
-                          minRating === r
-                            ? "#E50914"
-                            : "rgba(255,255,255,0.08)",
-                      }}
-                    >
-                      <Text
-                        style={{
-                          color: minRating === r ? "#E50914" : "#9ca3af",
-                          fontSize: 11,
-                          fontWeight: "700",
-                        }}
-                      >
-                        {r || "Any"}
-                        {r ? "+" : ""}
-                      </Text>
-                    </TouchableOpacity>
-                  ))}
-                </ScrollView>
-              </View>
+                  <Text
+                    style={{
+                      color: sort === s.id ? "#E50914" : "#9ca3af",
+                      fontSize: 12,
+                      fontWeight: "600",
+                    }}
+                  >
+                    {s.label}
+                  </Text>
+                </TouchableOpacity>
+              ))}
             </View>
           </View>
-        )}
-      </View>
+
+          {/* Genre */}
+          <View>
+            <Text
+              style={{
+                color: "#6B6B6B",
+                fontSize: 11,
+                fontWeight: "700",
+                marginBottom: 8,
+                textTransform: "uppercase",
+                letterSpacing: 0.5,
+              }}
+            >
+              Genre
+            </Text>
+            <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
+              {GENRES.map((g) => (
+                <TouchableOpacity
+                  key={g.id}
+                  onPress={() => setGenre(g.id)}
+                  style={{
+                    paddingHorizontal: 10,
+                    paddingVertical: 7,
+                    borderRadius: 8,
+                    backgroundColor:
+                      genre === g.id
+                        ? "rgba(229,9,20,0.2)"
+                        : "rgba(255,255,255,0.06)",
+                    borderWidth: 1,
+                    borderColor:
+                      genre === g.id ? "#E50914" : "rgba(255,255,255,0.08)",
+                  }}
+                >
+                  <Text
+                    style={{
+                      color: genre === g.id ? "#E50914" : "#9ca3af",
+                      fontSize: 12,
+                      fontWeight: "600",
+                    }}
+                  >
+                    {g.label}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+
+          {/* Min Rating */}
+          <View>
+            <Text
+              style={{
+                color: "#6B6B6B",
+                fontSize: 11,
+                fontWeight: "700",
+                marginBottom: 8,
+                textTransform: "uppercase",
+                letterSpacing: 0.5,
+              }}
+            >
+              Min Rating
+            </Text>
+            <View style={{ flexDirection: "row", gap: 8 }}>
+              {["", "5", "6", "7", "8"].map((r) => (
+                <TouchableOpacity
+                  key={r}
+                  onPress={() => setMinRating(r)}
+                  style={{
+                    paddingHorizontal: 12,
+                    paddingVertical: 7,
+                    borderRadius: 8,
+                    backgroundColor:
+                      minRating === r
+                        ? "rgba(229,9,20,0.2)"
+                        : "rgba(255,255,255,0.06)",
+                    borderWidth: 1,
+                    borderColor:
+                      minRating === r ? "#E50914" : "rgba(255,255,255,0.08)",
+                  }}
+                >
+                  <Text
+                    style={{
+                      color: minRating === r ? "#E50914" : "#9ca3af",
+                      fontSize: 12,
+                      fontWeight: "600",
+                    }}
+                  >
+                    {r ? `${r}+` : "Any"}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+        </ScrollView>
+      )}
 
       {/* Grid */}
       {loading ? (
         <View
-          style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
         >
-          <ActivityIndicator color="#E50914" />
+          <ActivityIndicator size="large" color="#E50914" />
         </View>
       ) : (
         <FlatList
@@ -598,6 +536,7 @@ export default function BrowseScreen() {
           contentContainerStyle={{
             paddingHorizontal: 16,
             paddingBottom: insets.bottom + 80,
+            paddingTop: 8,
           }}
           showsVerticalScrollIndicator={false}
           onEndReached={() => {
@@ -606,25 +545,17 @@ export default function BrowseScreen() {
           onEndReachedThreshold={0.5}
           ListFooterComponent={
             loadingMore ? (
-              <ActivityIndicator
-                color="#E50914"
-                style={{ marginVertical: 16 }}
-              />
+              <View style={{ paddingVertical: 16 }}>
+                <ActivityIndicator color="#E50914" />
+              </View>
             ) : null
           }
           ListEmptyComponent={
-            <View
-              style={{
-                alignItems: "center",
-                justifyContent: "center",
-                paddingTop: 80,
-              }}
+            <Text
+              style={{ color: "#6B6B6B", textAlign: "center", marginTop: 40 }}
             >
-              <Compass size={40} color="#333" />
-              <Text style={{ color: "#6b7280", marginTop: 12, fontSize: 14 }}>
-                No results found
-              </Text>
-            </View>
+              No results found
+            </Text>
           }
         />
       )}
